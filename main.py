@@ -2,6 +2,7 @@ import datetime
 
 import numpy as np
 from scipy.optimize import ridder, toms748
+from scipy.optimize._chandrupatla import _chandrupatla
 
 from ridder import vec_ridder
 
@@ -30,10 +31,15 @@ def main():
 
     # Measure the time for vec_rider
     t0 = datetime.datetime.now()
-    root = vec_ridder(fun, a, b, args=(params,))
+    _ = vec_ridder(fun, a, b, args=(params,))
     t1 = datetime.datetime.now()
-    print(f"vectorized time = {(t1 - t0).total_seconds():.2f}s")
-    print(f"Solution is correct = {np.allclose(root, params)}")
+    print(f"vec_ridder time = {(t1 - t0).total_seconds():.2f}s")
+
+    # Measure the time for chandrupatla
+    t0 = datetime.datetime.now()
+    _ = _chandrupatla(fun, a, b, args=(params,))
+    t1 = datetime.datetime.now()
+    print(f"chandrupatla time = {(t1 - t0).total_seconds():.2f}s")
 
     # measure the time for normal ridder many times
     a, b = -1, 1
@@ -41,7 +47,7 @@ def main():
     for i in range(n):
         _ = ridder(fun, a, b, args=(params[i],))
     t1 = datetime.datetime.now()
-    print(f"non vectorized time = {(t1 - t0).total_seconds():.2f}s")
+    print(f"non vectorized ridder = {(t1 - t0).total_seconds():.2f}s")
 
 
 if __name__ == "__main__":
